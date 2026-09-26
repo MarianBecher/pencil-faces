@@ -185,6 +185,21 @@ npm test # vitest
 npm run build # compiles src/ to dist/
 ```
 
+## Releasing
+
+The first release is published by hand (`npm publish --access public`).
+After that, configure a trusted publisher for the package on npmjs.com
+(package settings -> Trusted publisher -> GitHub Actions, repository
+`MarianBecher/pencil-faces`, workflow `publish.yml`). From then on a plain
+semver tag releases:
+
+```sh
+npm version patch      # bumps package.json and creates the tag "0.1.1"
+git push --follow-tags # CI publishes to npm with provenance
+```
+
+The `.npmrc` sets `tag-version-prefix=""`, so tags carry no `v`.
+
 ## License
 
 [MIT](LICENSE) (c) 2026 Marian Becher
