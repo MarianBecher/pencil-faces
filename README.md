@@ -2,6 +2,11 @@
 
 Pencil-drawn passport-photo portraits as SVG strings. One number in, one little face out: a head, clothes, eyes, brows, nose, mouth, wrinkles, beards, a dozen hairstyles, hats, glasses and a few extras, drawn as a line drawing and roughened by an SVG filter so the lines tremble and pick up grain like graphite on paper.
 
+![Thirty-two faces rolled from seeds](docs/faces.png)
+
+<img src="docs/faces.gif" alt="One face after another, rolled from seeds" width="260" align="right">
+
+
 - **Deterministic.** The same seed always gives the same face, and the same config always gives the same SVG string, on every machine. Send a 32-bit number over the wire and every client draws the same person.
 - **Editable.** A seed only rolls a plain `FaceConfig` object. Change any part of it (or build one from scratch) and render that.
 - **Tiny and dependency-free.** Pure functions that return strings. Works in the browser, in Node, in workers, in SSR.
