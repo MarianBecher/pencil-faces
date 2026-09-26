@@ -23,3 +23,17 @@ function ear(g: Geometry, pen: Pen, side: 1 | -1): string {
 }
 
 export const ears = (g: Geometry, pen: Pen): string => ear(g, pen, -1) + ear(g, pen, 1);
+
+/**
+ * The upper half of the head outline, pushed out by `grow` and ending `down`
+ * units above the eye line on both sides - the base of every hairstyle and
+ * of the beanie and cap. Slightly wider than the head and a bit higher on top.
+ * Runs from the left side over the crown to the right side (no Z).
+ */
+export function dome(g: Geometry, grow: number, down: number): string {
+  const { C, T, E, narrowTop } = g;
+  return (
+    `M${f(24 - C - grow)} ${f(E - down)}C${f(24 - C - grow)} ${f(E - 8)} ${f(24 - C * narrowTop - grow)} ${f(T - grow)} 24 ${f(T - grow)}` +
+    `C${f(24 + C * narrowTop + grow)} ${f(T - grow)} ${f(24 + C + grow)} ${f(E - 8)} ${f(24 + C + grow)} ${f(E - down)}`
+  );
+}

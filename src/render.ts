@@ -2,7 +2,11 @@ import { geometry } from './geometry.js';
 import { body, clothes, neck } from './parts/body.js';
 import { beard } from './parts/beard.js';
 import { brows } from './parts/brows.js';
+import { extra } from './parts/extra.js';
 import { eyes } from './parts/eyes.js';
+import { glasses } from './parts/glasses.js';
+import { hair } from './parts/hair.js';
+import { hat } from './parts/hat.js';
 import { ears, head } from './parts/head.js';
 import { marks } from './parts/marks.js';
 import { mouth } from './parts/mouth.js';
@@ -27,7 +31,10 @@ export function renderFace(config: FaceConfig, options: RenderOptions = {}): str
   const pen = makePen(background);
   const g = geometry(config);
 
+  const { back, front } = hair(config, g, pen);
+
   const parts = [
+    back,
     body(g, pen),
     neck(g, pen),
     clothes(config.clothes, g, pen),
@@ -39,6 +46,10 @@ export function renderFace(config: FaceConfig, options: RenderOptions = {}): str
     brows(config, g),
     nose(config.nose, g),
     mouth(config, g, pen),
+    front,
+    hat(config.hat, g, pen),
+    glasses(config.glasses, g, pen),
+    extra(config.extra, g, pen),
   ];
 
   const filter = filterId === null ? '' : ` filter="url(#${escapeAttr(filterId)})"`;
