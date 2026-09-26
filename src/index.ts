@@ -18,3 +18,4 @@ export type {
 } from './types.js';
 export { FACE_OPTIONS } from './options.js';
 export { defaultFace, faceFromSeed } from './config.js';
+export { renderFace } from './render.js';
