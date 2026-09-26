@@ -11,7 +11,7 @@ import { ears, head } from './parts/head.js';
 import { marks } from './parts/marks.js';
 import { mouth } from './parts/mouth.js';
 import { nose } from './parts/nose.js';
-import { escapeAttr, pen as makePen } from './svg.js';
+import { escapeAttr, pen as makePen, withClassDefaults } from './svg.js';
 import type { FaceConfig, RenderOptions } from './types.js';
 
 export const DEFAULT_FILTER_ID = 'pencil-face';
@@ -55,6 +55,6 @@ export function renderFace(config: FaceConfig, options: RenderOptions = {}): str
   const filter = filterId === null ? '' : ` filter="url(#${escapeAttr(filterId)})"`;
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" class="${escapeAttr(className)}" viewBox="5 3.5 38 46" aria-hidden="true" fill="none" stroke="${escapeAttr(stroke)}" stroke-linecap="round" stroke-linejoin="round">` +
-    `<g${filter}>${parts.join('')}</g></svg>`
+    `<g${filter}>${withClassDefaults(parts.join(''), stroke)}</g></svg>`
   );
 }

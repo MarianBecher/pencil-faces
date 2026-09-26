@@ -87,6 +87,17 @@ describe('renderFace', () => {
     for (const cls of ['fill', 'detail', 'soft', 'thick']) expect(all).toMatch(new RegExp(`class="[^"]*\\b${cls}\\b`));
   });
 
+  it('looks right without a stylesheet: dots are filled with the stroke colour', () => {
+    const svg = parse(renderFace({ ...defaultFace(), eyes: 'dot', brows: 'bushy' }, { stroke: '#123' })).documentElement;
+    const dots = svg.querySelectorAll('.fill');
+    expect(dots.length).toBeGreaterThan(0);
+    for (const dot of dots) {
+      expect(dot.getAttribute('fill')).toBe('#123');
+      expect(dot.getAttribute('stroke')).toBe('none');
+    }
+    expect(svg.querySelector('.thick')?.getAttribute('stroke-width')).toBe('1.3');
+  });
+
   it('keeps the proportions when only an unrelated choice changes', () => {
     const base = faceFromSeed(5, { hat: 'none', glasses: 'none', extra: 'none' });
     const headOf = (face: FaceConfig): string | undefined =>

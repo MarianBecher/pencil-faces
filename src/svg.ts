@@ -18,3 +18,24 @@ export interface Pen {
 }
 
 export const pen = (background: string): Pen => ({ bg: `fill="${escapeAttr(background)}"` });
+
+/**
+ * The parts mark their lines with four classes that a stylesheet can target:
+ * `fill` (solid dots such as pupils and freckles), `detail` (small extras a
+ * tiny rendering may hide), `soft` (shading: thinner and lighter) and
+ * `thick` (bold strokes such as bushy brows). So that a face also looks right
+ * without any stylesheet, this adds matching presentation attributes after
+ * each class attribute. Presentation attributes lose against every CSS rule,
+ * so a stylesheet written for the classes keeps full control.
+ */
+export function withClassDefaults(markup: string, stroke: string): string {
+  const ink = escapeAttr(stroke);
+  return markup.replace(/class="([^"]*)"/g, (attr, classes: string) => {
+    const set = new Set(classes.split(' '));
+    let extra = '';
+    if (set.has('fill')) extra += ` fill="${ink}" stroke="none"`;
+    if (set.has('soft')) extra += ' stroke-width=".55" opacity=".75"';
+    if (set.has('thick')) extra += ' stroke-width="1.3"';
+    return attr + extra;
+  });
+}
