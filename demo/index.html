@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>pencil-faces demo</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>pencil-faces</h1>
+      <p>Pencil-drawn passport photos from a seed. Pick a seed, then change any part.</p>
+    </header>
+
+    <main>
+      <section class="stage">
+        <div id="portrait" class="portrait"></div>
+        <div class="seed">
+          <label for="seed">Seed</label>
+          <input id="seed" type="number" min="0" max="4294967295" step="1" />
+          <button id="random" type="button">Random</button>
+        </div>
+        <div class="look">
+          <label><input id="pencil" type="checkbox" checked /> Pencil filter</label>
+          <label>Paper <input id="paper" type="color" value="#f3d9a4" /></label>
+          <label>Ink <input id="ink" type="color" value="#2b2622" /></label>
+        </div>
+        <div class="actions">
+          <button id="copy-svg" type="button">Copy SVG</button>
+          <button id="copy-config" type="button">Copy config</button>
+        </div>
+      </section>
+
+      <section class="controls">
+        <form id="pickers"></form>
+        <pre id="code"></pre>
+      </section>
+    </main>
+
+    <section>
+      <h2>More faces <button id="reroll" type="button">Shuffle</button></h2>
+      <div id="gallery" class="gallery"></div>
+    </section>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
