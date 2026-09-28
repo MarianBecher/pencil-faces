@@ -1,8 +1,12 @@
 # pencil-faces
 
+[![npm](https://img.shields.io/npm/v/pencil-faces)](https://www.npmjs.com/package/pencil-faces)
+[![CI](https://github.com/MarianBecher/pencil-faces/actions/workflows/ci.yml/badge.svg)](https://github.com/MarianBecher/pencil-faces/actions/workflows/ci.yml)
+[![Built with Claude Code](https://img.shields.io/badge/built%20with-Claude%20Code-d97757)](https://claude.com/claude-code)
+
 Little pencil-drawn portraits as SVG, generated from a number.
 
-![Thirty-two faces rolled from seeds](docs/faces.png)
+![Thirty-two faces rolled from seeds](https://raw.githubusercontent.com/MarianBecher/pencil-faces/main/docs/faces.png)
 
 I drew these for a geography game where every player gets a passport photo.
 A seed rolls a face: head shape, hair, eyes, brows, nose, mouth, clothes,
@@ -31,8 +35,8 @@ import { faceFromSeed, renderFace, pencilDefs } from 'pencil-faces';
 // Once per page: the pencil filter every face refers to.
 document.body.insertAdjacentHTML('beforeend', pencilDefs());
 
-const face = faceFromSeed(1234567);
-avatar.innerHTML = renderFace(face);
+const avatar = document.querySelector('.avatar');
+avatar.innerHTML = renderFace(faceFromSeed(1234567));
 ```
 
 The SVG has no fixed size and fills its container. Lines use the CSS `color`
@@ -50,7 +54,7 @@ colour of the box:
 }
 ```
 
-<img src="docs/faces.gif" alt="One face after another" width="200" align="right">
+<img src="https://raw.githubusercontent.com/MarianBecher/pencil-faces/main/docs/faces.gif" alt="One face after another" width="200" align="right">
 
 To change a face, change its config. `faceFromSeed` takes overrides that
 replace fields after the roll, so everything else stays the same:
@@ -81,14 +85,16 @@ the eyes.
 | `mouth` | `line` `smile` `grin` `surprised` `crooked` `pout` `frown` `dimples` |
 | `marks` | `laughLines` `foreheadLines` `crowsFeet` `chinDimple` `freckles` |
 | `beard` | `none` `moustache` `handlebar` `full` `goatee` `stubble` |
-| `hair` | `bald` `short` `sidePart` `curly` `afro` `bun` `long` `bangs` `mohawk` `spiky` `braid` `slickedBack` |
+| `hair` | `bald` `short` `sidePart` `curly` `afro` `bun` `long` `bangs` `mohawk` `spiky` `braid` `slickedBack`; with `bangs`, `longHairBehindBangs` adds long hair behind the fringe |
 | `hat` | `none` `beanie` `cap` `brimmed` `headband` |
 | `glasses` | `none` `round` `square` `sunglasses` `monocle` |
 | `extra` | `none` `headphones` `earring` `flower` `pencil` |
 
 `renderFace(config, options)` takes `filterId` (default `pencil-face`,
 `null` for clean vector lines), `className`, `background` and `stroke` if
-you would rather not use CSS variables.
+you would rather not use CSS variables. The filter must live in the same
+document as the face. For a standalone SVG file, say one written from Node,
+wrap the face in an `<svg>` of your own with `pencilFilter()` in its `<defs>`.
 
 ## Styling
 
@@ -99,10 +105,20 @@ sensible defaults, so a face looks right without any CSS. Stroke widths are
 in viewBox units and scale with the picture; tiny faces read better with
 thicker lines and `.detail { display: none }`.
 
-## Demo
+## Development
 
-`npm install && npm run demo` opens a page with a seed field, a picker for
-every option and a gallery of random faces.
+```sh
+git clone https://github.com/MarianBecher/pencil-faces && cd pencil-faces
+npm install
+npm run demo   # a page with a seed field, a picker for every option and a gallery
+make check     # typecheck, lint and tests
+```
+
+## How this was made
+
+The code, tests and docs were written by Claude (Anthropic) with Claude
+Code, directed and reviewed by me. CI runs the type check, lint, the test
+suite and the build on every push.
 
 ## License
 
