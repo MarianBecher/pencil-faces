@@ -1,6 +1,6 @@
 {
   "name": "pencil-faces",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Pencil-drawn passport-photo portraits as SVG strings, generated from a seed or a config.",
   "keywords": [
     "svg",
