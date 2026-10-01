@@ -1,7 +1,7 @@
 # Shortcuts for the everyday commands; everything runs through npm.
 
 .DEFAULT_GOAL := help
-.PHONY: help install build check test lint typecheck demo clean release-patch release-minor
+.PHONY: help install build check test lint typecheck demo clean release-patch release-minor release-major
 
 help: ## Show this help
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | sed 's/:.*## /|/' | column -t -s '|'
@@ -34,3 +34,6 @@ release-patch: ## Bump the patch version, tag it and push - CI publishes to npm
 
 release-minor: ## Bump the minor version, tag it and push - CI publishes to npm
 	npm version minor && git push --follow-tags
+
+release-major: ## Bump the major version, tag it and push - CI publishes to npm
+	npm version major && git push --follow-tags
