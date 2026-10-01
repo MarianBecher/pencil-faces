@@ -155,6 +155,115 @@ const HAIR: Record<Hair, HairDrawer> = {
         `<path d="M19 ${f(T + 3)}Q24 ${f(T - 1.4)} 30 ${f(T + 2)}M20 ${f(T + 1.6)}Q24 ${f(T - 2.4)} 29 ${f(T + 0.6)}" class="detail soft"/>`,
     };
   },
+  // Locs: wavy ropes of uneven length hanging down both sides to the shoulders.
+  locs: (g, pen, d) => {
+    const { C, T, E, B } = g;
+    let back = '';
+    for (const s of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        // The tops bunch up under the edge of the hair; the ropes fan out towards the shoulders.
+        const x = 24 + s * (C - 0.2 + i * 0.7);
+        const w = d.between(0.65, 0.85);
+        const y0 = E - 6;
+        const y1 = B + d.between(-1.5, 3.5);
+        const drift = s * (i * 1.7 + d.between(0, 0.6));
+        const wave = d.between(-0.8, 0.8);
+        const mid = (y0 + y1) / 2;
+        back +=
+          `<path ${pen.bg} d="M${f(x - w)} ${f(y0)}Q${f(x - w + wave)} ${f(mid)} ${f(x - w + drift)} ${f(y1)}` +
+          `A${f(w)} ${f(w)} 0 0 0 ${f(x + w + drift)} ${f(y1)}Q${f(x + w + wave)} ${f(mid)} ${f(x + w)} ${f(y0)}Z"/>` +
+          `<path d="M${f(x - w * 0.6 + wave * 0.4)} ${f(mid)}l${f(w * 1.2)} .5M${f(x - w * 0.6 + drift * 0.8)} ${f(y1 - 2)}l${f(w * 1.2)} .5" class="detail soft"/>`;
+      }
+    }
+    // On top, a slightly lumpy crown with the ropes running back from the hairline over it.
+    const rx = C + 1.6;
+    const ry = E - T + 0.4;
+    let crown = `M${f(24 - rx)} ${f(E - 1.4)}`;
+    const n = 13;
+    for (let i = 0; i <= n; i++) {
+      const a = Math.PI + (i / n) * Math.PI;
+      const x = 24 + Math.cos(a) * rx;
+      const y = E - 3 + Math.sin(a) * ry;
+      crown += i === 0 ? `L${f(x)} ${f(y)}` : `A${f(d.between(1.1, 1.5))} 1 0 0 1 ${f(x)} ${f(y)}`;
+    }
+    crown += `L${f(24 + rx)} ${f(E - 1.4)}${hairline(g, T + 5, 0)}${f(24 - rx)} ${f(E - 1.4)}Z`;
+    let ropes = '';
+    for (let i = 0; i < 6; i++) {
+      const x = 24 + (i - 2.5) * C * 0.3;
+      const bottom = T + 4.8 + Math.abs(x - 24) * 0.25;
+      const top = T - 1.8 + Math.abs(x - 24) * 0.3;
+      const lean = (x - 24) * 0.3;
+      const sway = d.between(-0.5, 0.5);
+      for (const side of [-0.6, 0.6]) {
+        ropes += `M${f(x + side)} ${f(bottom)}Q${f(x + side + sway)} ${f((top + bottom) / 2)} ${f(x + side + lean)} ${f(top)}`;
+      }
+    }
+    return {
+      back,
+      front: `<path ${pen.bg} d="${crown}"/><path d="${ropes}" class="detail soft"/>`,
+    };
+  },
+  // Cornrows: braided rows running from the hairline back over the crown.
+  cornrows: (g, pen) => {
+    const { C, T, E } = g;
+    let rows = '';
+    for (let i = 0; i < 5; i++) {
+      const x = 24 + (i - 2) * C * 0.36;
+      const bottom = T + 5 + Math.abs(x - 24) * 0.22;
+      const top = T + 0.4 + Math.abs(x - 24) * 0.3;
+      // Rows lean towards the middle as they run back over the head.
+      const lean = (24 - x) * 0.12;
+      for (let y = bottom; y > top; y -= 1.1) {
+        const cx = x + lean * ((bottom - y) / (bottom - top));
+        rows += `M${f(cx - 0.6)} ${f(y - 0.5)}l.6 .5.6-.5`;
+      }
+    }
+    return {
+      back: '',
+      front: `<path ${pen.bg} d="${dome(g, 0.6, 3)}${hairline(g, T + 5.6, 0)}${f(24 - C - 0.6)} ${f(E - 3)}Z"/><path d="${rows}" class="detail soft"/>`,
+    };
+  },
+  // Ponytail: pulled back tight, the tail swinging out behind the left side.
+  ponytail: (g, pen) => {
+    const { C, T, E, B } = g;
+    const x = 24 - C;
+    return {
+      back:
+        `<path ${pen.bg} d="M${f(x + 1)} ${f(T + 2)}C${f(x - 3)} ${f(T + 3)} ${f(x - 5)} ${f(E + 3)} ${f(x - 2.6)} ${f(B + 1)}C${f(x - 2)} ${f(E + 4)} ${f(x - 1)} ${f(E)} ${f(x + 0.4)} ${f(E - 3)}Z"/>` +
+        `<path d="M${f(x - 1.6)} ${f(T + 3.6)}l1.4 1.2M${f(x - 3)} ${f(E + 1)}q.4 3 .4 5" class="detail soft"/>` +
+        `<path d="M${f(x - 1.2)} ${f(T + 2.6)}l1.4 1.4" class="thick"/>`,
+      front:
+        `<path ${pen.bg} d="${dome(g, 0.8, 3.6)}${hairline(g, T + 4.6, -0.4)}${f(24 - C - 0.8)} ${f(E - 3.6)}Z"/>` +
+        `<path d="M20 ${f(T + 2.6)}Q24 ${f(T - 0.6)} 29 ${f(T + 1.6)}M21 ${f(T + 1.2)}Q23 ${f(T - 0.6)} 27 ${f(T + 0.2)}" class="detail soft"/>`,
+    };
+  },
+  // Buzz cut: no outline of its own, only a hairline and a stipple over the scalp.
+  buzz: (g, _pen, d) => {
+    const { C, T, E } = g;
+    const dots = Array.from({ length: 22 }, () => {
+      const x = 24 + d.between(-0.8, 0.8) * C;
+      const top = T + 0.8 + Math.abs(x - 24) * 0.3;
+      return `<circle cx="${f(x)}" cy="${f(d.between(top, T + 5))}" r=".22"/>`;
+    });
+    return {
+      back: '',
+      front:
+        `<path d="M${f(24 - C + 0.2)} ${f(E - 4)}C${f(24 - C + 1)} ${f(T + 5)} 21 ${f(T + 5.4)} 24 ${f(T + 5.4)}C27 ${f(T + 5.4)} ${f(24 + C - 1)} ${f(T + 5)} ${f(24 + C - 0.2)} ${f(E - 4)}" class="soft"/>` +
+        `<g class="fill detail">${dots.join('')}</g>`,
+    };
+  },
+  // Receding: an M-shaped hairline with bare temples and a tuft in the middle.
+  receding: (g, pen) => {
+    const { C, T, E } = g;
+    return {
+      back: '',
+      front:
+        `<path ${pen.bg} d="${dome(g, 1, 3)}C${f(24 + C - 0.6)} ${f(T + 3)} ${f(24 + C - 2)} ${f(T + 1.4)} ${f(24 + C - 3.4)} ${f(T + 1.8)}` +
+        `C${f(24 + 2.4)} ${f(T + 2.4)} 25 ${f(T + 4.6)} 24 ${f(T + 4.6)}C23 ${f(T + 4.6)} ${f(24 - 2.4)} ${f(T + 2.4)} ${f(24 - C + 3.4)} ${f(T + 1.8)}` +
+        `C${f(24 - C + 2)} ${f(T + 1.4)} ${f(24 - C + 0.6)} ${f(T + 3)} ${f(24 - C - 1)} ${f(E - 3)}Z"/>` +
+        strands(g, 4, 0.4, 2, 0.4),
+    };
+  },
 };
 
 export const hair = (config: FaceConfig, g: Geometry, pen: Pen): HairLayers =>

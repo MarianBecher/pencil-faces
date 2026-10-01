@@ -16,6 +16,7 @@ export type {
   FaceOverrides,
   Glasses,
   Hair,
+  HairTone,
   Hat,
   HeadShape,
   Mouth,

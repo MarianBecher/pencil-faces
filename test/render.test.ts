@@ -107,6 +107,63 @@ describe('renderFace', () => {
     for (const hair of FACE_OPTIONS.hair) expect(headOf({ ...base, hair, hat: 'none' })).toContain(head);
   });
 
+  it('hides the hair under a hijab or turban, and the ears and earrings under a hijab', () => {
+    const base: FaceConfig = { ...defaultFace(), hair: 'long', extra: 'earring' };
+    const plain = renderFace({ ...base, hat: 'none' }, { filterId: null });
+    const hairOnly = (hat: FaceConfig['hat']): string => renderFace({ ...base, hat, hair: 'bald' }, { filterId: null });
+    for (const hat of ['hijab', 'turban'] as const) {
+      // The hairstyle makes no difference any more.
+      expect(renderFace({ ...base, hat }, { filterId: null }), hat).toBe(hairOnly(hat));
+    }
+    const earring = 'r="1" class="detail"';
+    expect(plain).toContain(earring);
+    expect(renderFace({ ...base, hat: 'turban' })).toContain(earring);
+    expect(renderFace({ ...base, hat: 'hijab' })).not.toContain(earring);
+    expect(renderFace({ ...base, hat: 'hijab', extra: 'headphones' })).toContain('rx="1.8"');
+  });
+
+  it('cuts the hair to beanies, caps, brimmed hats and fezzes, with an id that follows the config', () => {
+    const face: FaceConfig = { ...defaultFace(), hair: 'afro' };
+    for (const hat of ['beanie', 'cap', 'brimmed', 'fez'] as const) {
+      const svg = parse(renderFace({ ...face, hat })).documentElement;
+      const clipped = svg.querySelector('[clip-path]');
+      const id = clipped?.getAttribute('clip-path')?.match(/^url\(#(.+)\)$/)?.[1];
+      expect(id, hat).toBeDefined();
+      expect(svg.querySelector(`clipPath[id="${id}"]`), hat).not.toBeNull();
+      expect(svg.querySelector(`clipPath[id="${id}-shape"] g`), hat).toBeNull();
+    }
+    const idOf = (config: FaceConfig): string | undefined => /clipPath id="([^"]+)"/.exec(renderFace(config))?.[1];
+    expect(idOf({ ...face, hat: 'cap' })).toBe(idOf({ ...face, hat: 'cap' }));
+    expect(idOf({ ...face, hat: 'cap' })).not.toBe(idOf({ ...face, hat: 'cap', jitter: 1 }));
+    for (const hat of ['none', 'headband', 'kippah', 'hijab', 'turban'] as const) {
+      expect(renderFace({ ...face, hat }), hat).not.toContain('clip-path');
+    }
+  });
+
+  it('shades mid and dark hair with hatching inside the hair, and light hair not at all', () => {
+    const face: FaceConfig = { ...defaultFace(), hair: 'long' };
+    const strokes = (svg: string): number => (/clip-path="url\(#pencil-face-tone-[^"]*"/.exec(svg) ? (svg.match(/M-?[\d.]+ 60l60-60/g) ?? []).length : 0);
+    const light = renderFace({ ...face, hairTone: 'light' });
+    const mid = renderFace({ ...face, hairTone: 'mid' });
+    const dark = renderFace({ ...face, hairTone: 'dark' });
+    expect(light).not.toContain('pencil-face-tone-');
+    expect(strokes(mid)).toBeGreaterThan(0);
+    expect(strokes(dark)).toBeGreaterThan(strokes(mid));
+    // Both layers of long hair get their own clip, referenced from the same svg.
+    const svg = parse(dark).documentElement;
+    for (const ref of svg.querySelectorAll('[clip-path]')) {
+      const id = /^url\(#(.+)\)$/.exec(ref.getAttribute('clip-path') ?? '')?.[1];
+      expect(svg.querySelector(`clipPath[id="${id}"]`), id).not.toBeNull();
+    }
+    // Configs from before 0.2 have no tone and draw as light hair.
+    const old: Partial<FaceConfig> = { ...face };
+    delete old.hairTone;
+    expect(renderFace(old as FaceConfig)).toBe(renderFace({ ...face, hairTone: 'light' }));
+    // Nothing to shade under a hijab, or on a bald head.
+    expect(renderFace({ ...face, hairTone: 'dark', hat: 'hijab' })).not.toContain('pencil-face-tone-');
+    expect(renderFace({ ...face, hairTone: 'dark', hair: 'bald' })).not.toContain('pencil-face-tone-');
+  });
+
   it('changes the drawing when the jitter changes', () => {
     const face = defaultFace();
     expect(renderFace({ ...face, jitter: 1 })).not.toBe(renderFace({ ...face, jitter: 2 }));
@@ -120,7 +177,7 @@ describe('renderFace', () => {
       expect(i, needle).toBeGreaterThan(-1);
       return i;
     };
-    const hairBack = at('<g><path fill="var(--c)" d="M');
+    const hairBack = at('<g clip-path="url(#pencil-face-hair-');
     const body = at(' 60C');
     const hat = at('r="2.4"');
     const earring = at('r="1" class="detail"');

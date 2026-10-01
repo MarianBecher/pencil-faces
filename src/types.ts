@@ -19,8 +19,16 @@ export type Hair =
   | 'mohawk'
   | 'spiky'
   | 'braid'
-  | 'slickedBack';
-export type Hat = 'none' | 'beanie' | 'cap' | 'brimmed' | 'headband';
+  | 'slickedBack'
+  | 'locs'
+  | 'cornrows'
+  | 'ponytail'
+  | 'buzz'
+  | 'receding';
+/** How dark the hair is: `light` is a bare outline, `mid` and `dark` are shaded with pencil hatching. */
+export type HairTone = 'light' | 'mid' | 'dark';
+/** Hats and head coverings. A hijab covers hair, ears and neck; a turban covers the hair. */
+export type Hat = 'none' | 'beanie' | 'cap' | 'brimmed' | 'headband' | 'hijab' | 'turban' | 'kippah' | 'fez';
 export type Glasses = 'none' | 'round' | 'square' | 'sunglasses' | 'monocle';
 export type Extra = 'none' | 'headphones' | 'earring' | 'flower' | 'pencil';
 
@@ -56,6 +64,8 @@ export interface FaceConfig {
   hair: Hair;
   /** Only used with `hair: 'bangs'`: long hair falls behind the fringe. */
   longHairBehindBangs: boolean;
+  /** Configs from before 0.2 lack it and render as `'light'`. */
+  hairTone: HairTone;
   hat: Hat;
   glasses: Glasses;
   extra: Extra;

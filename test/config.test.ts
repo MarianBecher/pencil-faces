@@ -12,6 +12,7 @@ import {
   type FaceConfig,
   type Glasses,
   type Hair,
+  type HairTone,
   type Hat,
   type HeadShape,
   type Mouth,
@@ -69,8 +70,24 @@ const UNIONS = {
     spiky: true,
     braid: true,
     slickedBack: true,
+    locs: true,
+    cornrows: true,
+    ponytail: true,
+    buzz: true,
+    receding: true,
   } satisfies Record<Hair, true>,
-  hat: { none: true, beanie: true, cap: true, brimmed: true, headband: true } satisfies Record<Hat, true>,
+  hairTone: { light: true, mid: true, dark: true } satisfies Record<HairTone, true>,
+  hat: {
+    none: true,
+    beanie: true,
+    cap: true,
+    brimmed: true,
+    headband: true,
+    hijab: true,
+    turban: true,
+    kippah: true,
+    fez: true,
+  } satisfies Record<Hat, true>,
   glasses: { none: true, round: true, square: true, sunglasses: true, monocle: true } satisfies Record<Glasses, true>,
   extra: { none: true, headphones: true, earring: true, flower: true, pencil: true } satisfies Record<Extra, true>,
 };
@@ -129,6 +146,21 @@ describe('faceFromSeed', () => {
     }
   });
 
+  it('never rolls a beard under a hijab', () => {
+    for (let seed = 0; seed < 5000; seed++) {
+      const face = faceFromSeed(seed);
+      if (face.hat === 'hijab') expect(face.beard, `seed ${seed}`).toBe('none');
+    }
+  });
+
+  it('takes a string seed, such as a user name', () => {
+    expect(faceFromSeed('marian')).toEqual(faceFromSeed('marian'));
+    expect(faceFromSeed('marian')).not.toEqual(faceFromSeed('Marian'));
+    expectValid(faceFromSeed(''));
+    expectValid(faceFromSeed('Ünïcødé 🙂'));
+    expect(faceFromSeed('anna', { hat: 'fez' }).hat).toBe('fez');
+  });
+
   it('applies overrides after the roll', () => {
     const rolled = faceFromSeed(7);
     const face = faceFromSeed(7, { hair: 'mohawk', hat: 'cap', jitter: 123 });
@@ -150,7 +182,14 @@ describe('faceFromSeed', () => {
       return hits / n;
     };
     expect(count((f) => f.beard !== 'none')).toBeCloseTo(0.26, 1);
-    expect(count((f) => f.hat !== 'none')).toBeCloseTo(0.12, 1);
+    // 12 % from 0.1, plus 5 % of the rest from the head coverings of 0.2.
+    expect(count((f) => f.hat !== 'none')).toBeCloseTo(0.12 + 0.88 * 0.05, 1);
+    expect(count((f) => ['hijab', 'turban', 'kippah', 'fez'].includes(f.hat))).toBeCloseTo(0.05, 1);
+    // Every hairstyle about equally likely, the new ones included.
+    expect(count((f) => f.hair === 'locs')).toBeCloseTo(1 / FACE_OPTIONS.hair.length, 1);
+    expect(count((f) => f.hair === 'short')).toBeCloseTo(1 / FACE_OPTIONS.hair.length, 1);
+    expect(count((f) => f.hairTone === 'light')).toBeCloseTo(0.4, 1);
+    expect(count((f) => f.hairTone === 'dark')).toBeCloseTo(0.3, 1);
     expect(count((f) => f.glasses !== 'none')).toBeCloseTo(0.24, 1);
     expect(count((f) => f.extra !== 'none')).toBeCloseTo(0.2, 1);
     expect(count((f) => f.wink)).toBeCloseTo(0.08, 1);

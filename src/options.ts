@@ -7,6 +7,7 @@ import type {
   Eyes,
   Glasses,
   Hair,
+  HairTone,
   Hat,
   HeadShape,
   Mouth,
@@ -14,8 +15,8 @@ import type {
 } from './types.js';
 
 /**
- * Every value of every categorical field, in a stable order. The order is
- * the one `faceFromSeed` picks from, and `'none'` always comes first.
+ * Every value of every categorical field, in a stable order: `'none'`
+ * always comes first, and values added in later versions are appended.
  */
 export const FACE_OPTIONS: {
   readonly shape: readonly HeadShape[];
@@ -28,6 +29,7 @@ export const FACE_OPTIONS: {
   readonly mouth: readonly Mouth[];
   readonly beard: readonly Beard[];
   readonly hair: readonly Hair[];
+  readonly hairTone: readonly HairTone[];
   readonly hat: readonly Hat[];
   readonly glasses: readonly Glasses[];
   readonly extra: readonly Extra[];
@@ -54,8 +56,14 @@ export const FACE_OPTIONS: {
     'spiky',
     'braid',
     'slickedBack',
+    'locs',
+    'cornrows',
+    'ponytail',
+    'buzz',
+    'receding',
   ] as const),
-  hat: Object.freeze(['none', 'beanie', 'cap', 'brimmed', 'headband'] as const),
+  hairTone: Object.freeze(['light', 'mid', 'dark'] as const),
+  hat: Object.freeze(['none', 'beanie', 'cap', 'brimmed', 'headband', 'hijab', 'turban', 'kippah', 'fez'] as const),
   glasses: Object.freeze(['none', 'round', 'square', 'sunglasses', 'monocle'] as const),
   extra: Object.freeze(['none', 'headphones', 'earring', 'flower', 'pencil'] as const),
 });

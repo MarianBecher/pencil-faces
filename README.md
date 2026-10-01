@@ -56,6 +56,13 @@ colour of the box:
 
 <img src="https://raw.githubusercontent.com/MarianBecher/pencil-faces/main/docs/faces.gif" alt="One face after another" width="200" align="right">
 
+The seed can also be a string, so a user name gives everyone a face of
+their own without storing anything:
+
+```ts
+renderFace(faceFromSeed('marian'));
+```
+
 To change a face, change its config. `faceFromSeed` takes overrides that
 replace fields after the roll, so everything else stays the same:
 
@@ -71,6 +78,13 @@ width, eye spacing, nose length) and the small wobble that keeps a hand
 drawing from being perfectly symmetric. Swapping the hairstyle never moves
 the eyes.
 
+Seeds stay as stable as they can across releases. New options are rolled
+after the old ones, so a seed only changes when one of those new rolls hits
+it, and a config renders the same unless a release fixes how something is
+drawn (0.2 stops hair sticking out over beanies, caps, brimmed hats and
+fezzes). A
+test pins the faces of earlier versions.
+
 ## Options
 
 | Field | Values |
@@ -85,8 +99,9 @@ the eyes.
 | `mouth` | `line` `smile` `grin` `surprised` `crooked` `pout` `frown` `dimples` |
 | `marks` | `laughLines` `foreheadLines` `crowsFeet` `chinDimple` `freckles` |
 | `beard` | `none` `moustache` `handlebar` `full` `goatee` `stubble` |
-| `hair` | `bald` `short` `sidePart` `curly` `afro` `bun` `long` `bangs` `mohawk` `spiky` `braid` `slickedBack`; with `bangs`, `longHairBehindBangs` adds long hair behind the fringe |
-| `hat` | `none` `beanie` `cap` `brimmed` `headband` |
+| `hair` | `bald` `short` `sidePart` `curly` `afro` `bun` `long` `bangs` `mohawk` `spiky` `braid` `slickedBack` `locs` `cornrows` `ponytail` `buzz` `receding`; with `bangs`, `longHairBehindBangs` adds long hair behind the fringe |
+| `hairTone` | `light` (outline only) `mid` `dark` (shaded with hatching) |
+| `hat` | `none` `beanie` `cap` `brimmed` `headband` `hijab` `turban` `kippah` `fez`; a `hijab` covers hair, ears and neck, a `turban` the hair |
 | `glasses` | `none` `round` `square` `sunglasses` `monocle` |
 | `extra` | `none` `headphones` `earring` `flower` `pencil` |
 

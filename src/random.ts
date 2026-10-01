@@ -14,7 +14,7 @@ export function mulberry32(seed: number): Rng {
 }
 
 /** FNV-1a over a string, continued from `start`. */
-function fnv1a(text: string, start = 0x811c9dc5): number {
+export function fnv1a(text: string, start = 0x811c9dc5): number {
   let h = start;
   for (const ch of text) {
     h ^= ch.codePointAt(0) ?? 0;
